@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { CalorieLog } from '@/types';
+import { cn } from '@/lib/utils';
 
 interface CalorieProgressProps {
   consumed: number;
@@ -35,8 +36,7 @@ const CalorieProgress: React.FC<CalorieProgressProps> = ({ consumed, goal, logs 
       
       <Progress 
         value={progress} 
-        className="h-2"
-        indicatorClassName={getProgressColor()}
+        className={cn("h-2", getProgressColor())}
       />
       
       <div className="text-sm text-gray-500 flex justify-between">
