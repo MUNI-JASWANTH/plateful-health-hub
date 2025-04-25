@@ -9,7 +9,141 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      admin_logs: {
+        Row: {
+          action: string
+          admin_id: string | null
+          created_at: string | null
+          details: Json | null
+          entity_id: string
+          entity_type: string
+          id: string
+        }
+        Insert: {
+          action: string
+          admin_id?: string | null
+          created_at?: string | null
+          details?: Json | null
+          entity_id: string
+          entity_type: string
+          id?: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string | null
+          created_at?: string | null
+          details?: Json | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      calorie_logs: {
+        Row: {
+          calories: number
+          created_at: string | null
+          date: string
+          id: string
+          recipe_id: string
+          recipe_name: string
+          user_id: string
+        }
+        Insert: {
+          calories: number
+          created_at?: string | null
+          date?: string
+          id?: string
+          recipe_id: string
+          recipe_name: string
+          user_id: string
+        }
+        Update: {
+          calories?: number
+          created_at?: string | null
+          date?: string
+          id?: string
+          recipe_id?: string
+          recipe_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string | null
+          role: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          name?: string | null
+          role?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          role?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      recipes: {
+        Row: {
+          cook_time: number | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          ingredients: Json
+          prep_time: number | null
+          servings: number | null
+          steps: string[]
+          title: string
+          total_calories: number
+          updated_at: string | null
+        }
+        Insert: {
+          cook_time?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          ingredients: Json
+          prep_time?: number | null
+          servings?: number | null
+          steps: string[]
+          title: string
+          total_calories: number
+          updated_at?: string | null
+        }
+        Update: {
+          cook_time?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          ingredients?: Json
+          prep_time?: number | null
+          servings?: number | null
+          steps?: string[]
+          title?: string
+          total_calories?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

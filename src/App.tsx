@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -8,6 +7,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { RecipeProvider } from "@/context/RecipeContext";
 import { CalorieProvider } from "@/context/CalorieContext";
+import PrivateRoute from "@/components/PrivateRoute";
+import AdminRoute from "@/components/AdminRoute";
 import BottomTabs from "@/components/BottomTabs";
 
 import SplashScreen from "@/components/SplashScreen";
@@ -26,14 +27,12 @@ const App = () => {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    // Check if the splash screen has been shown before
     const hasSeenSplash = localStorage.getItem("hasSeenSplash");
     
     if (hasSeenSplash) {
       setShowSplash(false);
       setIsInitialized(true);
     } else {
-      // If not, show it and set the flag in localStorage
       setShowSplash(true);
       localStorage.setItem("hasSeenSplash", "true");
     }
@@ -54,30 +53,38 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <RecipeProvider>
-          <CalorieProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <div className="min-h-screen bg-gray-50">
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/cookbook" element={<Cookbook />} />
-                    <Route path="/calories" element={<Calories />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/signup" element={<Signup />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                  <BottomTabs />
-                </div>
-              </BrowserRouter>
-            </TooltipProvider>
-          </CalorieProvider>
-        </RecipeProvider>
-      </AuthProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <RecipeProvider>
+            <CalorieProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                {showSplash ? (
+                  <SplashScreen onComplete={handleSplashComplete} />
+                ) : (
+                  <div className="min-h-screen bg-gray-50">
+                    <Routes>
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/signup" element={<Signup />} />
+                      
+                      <Route element={<PrivateRoute />}>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/cookbook" element={<Cookbook />} />
+                        <Route path="/calories" element={<Calories />} />
+                        <Route path="/profile" element={<Profile />} />
+                      </Route>
+
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                    <BottomTabs />
+                  </div>
+                )}
+              </TooltipProvider>
+            </CalorieProvider>
+          </RecipeProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 };
