@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -27,14 +28,23 @@ const App = () => {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    // Check if it's the first visit or if it's been more than a day since the last visit
     const hasSeenSplash = localStorage.getItem("hasSeenSplash");
+    const lastVisit = localStorage.getItem("lastVisit");
+    const now = new Date().getTime();
     
-    if (hasSeenSplash) {
+    // Show splash if it's the first visit or it's been more than a day
+    const shouldShowSplash = !hasSeenSplash || 
+      (lastVisit && (now - parseInt(lastVisit)) > 24 * 60 * 60 * 1000);
+    
+    if (!shouldShowSplash) {
       setShowSplash(false);
       setIsInitialized(true);
     } else {
       setShowSplash(true);
+      // Store the current time as the last visit
       localStorage.setItem("hasSeenSplash", "true");
+      localStorage.setItem("lastVisit", now.toString());
     }
   }, []);
 
@@ -60,26 +70,23 @@ const App = () => {
               <TooltipProvider>
                 <Toaster />
                 <Sonner />
-                {showSplash ? (
-                  <SplashScreen onComplete={handleSplashComplete} />
-                ) : (
-                  <div className="min-h-screen bg-gray-50">
-                    <Routes>
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/signup" element={<Signup />} />
-                      
-                      <Route element={<PrivateRoute />}>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/cookbook" element={<Cookbook />} />
-                        <Route path="/calories" element={<Calories />} />
-                        <Route path="/profile" element={<Profile />} />
-                      </Route>
+                <div className="min-h-screen bg-gray-50">
+                  <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    
+                    <Route path="/" element={<Home />} />
+                    
+                    <Route element={<PrivateRoute />}>
+                      <Route path="/cookbook" element={<Cookbook />} />
+                      <Route path="/calories" element={<Calories />} />
+                      <Route path="/profile" element={<Profile />} />
+                    </Route>
 
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                    <BottomTabs />
-                  </div>
-                )}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                  <BottomTabs />
+                </div>
               </TooltipProvider>
             </CalorieProvider>
           </RecipeProvider>

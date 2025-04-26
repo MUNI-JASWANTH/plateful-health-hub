@@ -58,6 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .then(({ data: profile, error }) => {
             if (error) {
               console.error("Error fetching profile:", error);
+              setIsLoading(false);
               return;
             }
             
@@ -68,9 +69,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               name: profile?.name || '',
               isAdmin: profile?.role === 'admin'
             });
+            setIsLoading(false);
           });
+      } else {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
 
     return () => {
