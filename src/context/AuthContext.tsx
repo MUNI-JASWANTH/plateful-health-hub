@@ -11,6 +11,9 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  updateUserProfile: (data: {name?: string, email?: string, avatar_url?: string}) => Promise<void>;
+  updatePassword: (password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,7 +41,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: session.user.id,
           email: session.user.email!,
           name: profile?.name || '',
-          isAdmin: profile?.role === 'admin'
+          isAdmin: profile?.role === 'admin',
+          avatarUrl: profile?.avatar_url || null
         });
       } else {
         setUser(null);
@@ -67,7 +71,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               id: session.user.id,
               email: session.user.email!,
               name: profile?.name || '',
-              isAdmin: profile?.role === 'admin'
+              isAdmin: profile?.role === 'admin',
+              avatarUrl: profile?.avatar_url || null
             });
             setIsLoading(false);
           });
@@ -105,7 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signup = async (email: string, password: string, name: string) => {
     setIsLoading(true);
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { error: signUpError, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -143,8 +148,88 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const resetPassword = async (email: string) => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      
+      if (error) throw error;
+      toast.success("Password reset email sent! Check your inbox.");
+    } catch (error: any) {
+      console.error('Reset password error:', error);
+      toast.error(error.message || 'Error sending password reset email');
+      throw new Error(error.message || 'Error sending password reset email');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateUserProfile = async (data: {name?: string, email?: string, avatar_url?: string}) => {
+    try {
+      if (!user) throw new Error("Not authenticated");
+      
+      // Update auth email if included
+      if (data.email) {
+        const { error: emailError } = await supabase.auth.updateUser({ email: data.email });
+        if (emailError) throw emailError;
+      }
+
+      // Update profile data
+      const updateData: Record<string, any> = {};
+      if (data.name) updateData.name = data.name;
+      if (data.avatar_url) updateData.avatar_url = data.avatar_url;
+      
+      if (Object.keys(updateData).length > 0) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update(updateData)
+          .eq('id', user.id);
+        
+        if (profileError) throw profileError;
+      }
+      
+      // Update local user state
+      setUser({
+        ...user,
+        name: data.name || user.name,
+        email: data.email || user.email,
+        avatarUrl: data.avatar_url || user.avatarUrl
+      });
+      
+      toast.success("Profile updated successfully!");
+    } catch (error: any) {
+      console.error('Profile update error:', error);
+      toast.error(error.message || 'Error updating profile');
+      throw new Error(error.message || 'Error updating profile');
+    }
+  };
+
+  const updatePassword = async (password: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({ password });
+      
+      if (error) throw error;
+      toast.success("Password updated successfully!");
+    } catch (error: any) {
+      console.error('Password update error:', error);
+      toast.error(error.message || 'Error updating password');
+      throw new Error(error.message || 'Error updating password');
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, signup, logout }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      isLoading, 
+      login, 
+      signup, 
+      logout, 
+      resetPassword,
+      updateUserProfile,
+      updatePassword
+    }}>
       {children}
     </AuthContext.Provider>
   );
