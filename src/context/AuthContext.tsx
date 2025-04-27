@@ -33,11 +33,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event);
       if (session) {
-        // Fetch the user's profile data including role
         const { data: profile, error } = await supabase
           .from('profiles')
           .select('*')
@@ -64,7 +62,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
     });
 
-    // Check current session
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log("Initial session check:", session);
       if (session) {
@@ -184,13 +181,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       if (!user) throw new Error("Not authenticated");
       
-      // Update auth email if included
       if (data.email) {
         const { error: emailError } = await supabase.auth.updateUser({ email: data.email });
         if (emailError) throw emailError;
       }
 
-      // Update profile data
       const updateData: Record<string, any> = {};
       if (data.name) updateData.name = data.name;
       if (data.avatar_url) updateData.avatar_url = data.avatar_url;
@@ -204,7 +199,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (profileError) throw profileError;
       }
       
-      // Update local user state
       setUser({
         ...user,
         name: data.name || user.name,
