@@ -5,6 +5,16 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+interface ProfileData {
+  id: string;
+  name: string | null;
+  role: string | null;
+  status: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  avatar_url?: string | null;
+}
+
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;

@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Utensils, Apple, HeartPulse } from 'lucide-react';
 
 interface SplashScreenProps {
-  onComplete: () => void;
+  onComplete?: () => void;
 }
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
@@ -19,7 +19,9 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
 
     // Complete splash screen after animation
     const timer = setTimeout(() => {
-      onComplete();
+      if (onComplete) {
+        onComplete();
+      }
     }, 3000);
 
     return () => {
