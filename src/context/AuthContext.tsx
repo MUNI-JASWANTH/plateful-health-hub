@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,7 +11,7 @@ interface ProfileData {
   status: string | null;
   created_at: string | null;
   updated_at: string | null;
-  avatar_url?: string | null;
+  avatar_url: string | null;
 }
 
 interface AuthContextType {
@@ -39,11 +38,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log("Auth state changed:", event);
       if (session) {
         // Fetch the user's profile data including role
-        const { data: profile } = await supabase
+        const { data: profile, error } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
           .single();
+
+        if (error) {
+          console.error("Error fetching profile:", error);
+          return;
+        }
 
         console.log("Profile data:", profile);
 
