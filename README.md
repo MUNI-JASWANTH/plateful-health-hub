@@ -22,7 +22,7 @@ Welcome to my **Developer Portfolio**! This is a fully responsive and interactiv
 - **Design:** Tailwind CSS / SCSS / Bootstrap (if used)
 - **Icons & Assets:** Font Awesome, SVGs
 - **Deployment:** GitHub Pages / Vercel / Netlify
-- *(Optional)* EmailJS / Formspree for contact form
+-  EmailJS / Formspree for contact form
 
 ---
 
